@@ -1,0 +1,318 @@
+{
+	"info": {
+		"_postman_id": "277093bf-0e2b-42f4-8fa2-f4242e09c29d",
+		"name": "nodejs-typescript-auth-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4070296"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Register user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let firstName = pm.variables.replaceIn(\"{{$randomFirstName}}\")\r",
+									"let lastName = pm.variables.replaceIn(\"{{$randomFirstName}}\")\r",
+									"\r",
+									"pm.collectionVariables.set(\"firstName\", firstName)\r",
+									"pm.collectionVariables.set(\"lastName\", lastName)\r",
+									"pm.collectionVariables.set(\"email\", `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"{{firstName}}\",\r\n    \"lastName\": \"{{lastName}}\",\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\",\r\n    \"passwordConfirmation\": \"{{passwordConfirmation}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}api/users",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}api/users/verify/:id/:verificationCode",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"users",
+								"verify",
+								":id",
+								":verificationCode"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6539f24cf6d2b4c15b5b531f"
+								},
+								{
+									"key": "verificationCode",
+									"value": "6eA6P88HndTrRmH5uvExH"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request reset password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{email}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}api/users/forgotpassword",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"users",
+								"forgotpassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"123789\",\r\n    \"passwordConfirmation\": \"123789\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}api/users/resetpassword/:id/:passwordResetCode",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"users",
+								"resetpassword",
+								":id",
+								":passwordResetCode"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6538c837cfd962714c07a230"
+								},
+								{
+									"key": "passwordResetCode",
+									"value": "7rB5dIykJggw8OGFLKtf1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}api/users/me",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody)\r",
+									"pm.collectionVariables.set(\"accessToken\", jsonData.accessToken)\r",
+									"pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}api/session",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"session"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh access token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}api/session/refresh",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"session",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "http://localhost:3000/",
+			"type": "string"
+		},
+		{
+			"key": "firstName",
+			"value": ""
+		},
+		{
+			"key": "lastName",
+			"value": ""
+		},
+		{
+			"key": "email",
+			"value": ""
+		},
+		{
+			"key": "password",
+			"value": "123456",
+			"type": "string"
+		},
+		{
+			"key": "passwordConfirmation",
+			"value": "123456",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		}
+	]
+}
